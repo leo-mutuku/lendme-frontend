@@ -1,38 +1,70 @@
 # lendme-frontend
 
-This template should help get you started developing with Vue 3 in Vite.
+Vue 3 frontend for LendMe.
 
-## Recommended IDE Setup
+## Stack
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+- [Vue 3](https://vuejs.org/) — Composition API with `<script setup>`
+- [Vuetify](https://vuetifyjs.com/) — UI components ([Material Design Icons](https://pictogrammers.com/library/mdi/) via `mdi-*` names)
+- [Vue Router](https://router.vuejs.org/) — routing
+- [Pinia](https://pinia.vuejs.org/) — state management
+- [Vite](https://vite.dev/) — dev server and build
+- [ESLint](https://eslint.org/) + `eslint-plugin-vue` — linting
 
-## Recommended Browser Setup
+## Project structure
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
+```
+src/
+├── main.js            # App entry: creates the app and registers plugins
+├── App.vue            # Root component (<v-app> + <router-view>)
+├── plugins/
+│   ├── index.js       # Registers Pinia, Router and Vuetify
+│   └── vuetify.js     # Vuetify config (theme, icons)
+├── router/index.js    # Routes
+├── stores/            # Pinia stores (one file per domain, setup-store style)
+├── layouts/           # Page shells (app bar, navigation drawer)
+├── views/             # Route-level pages
+├── components/        # Reusable components
+└── styles/main.css    # Global styles
 ```
 
-### Compile and Hot-Reload for Development
+Vuetify components are auto-imported by `vite-plugin-vuetify`, so you can use `<v-btn>` etc. without importing them. Use the `@/` alias to import from `src/`.
 
-```sh
-npm run dev
+### Adding a page
+
+1. Create `src/views/LoansView.vue`.
+2. Add a route as a child of the default layout in `src/router/index.js`:
+   ```js
+   { path: 'loans', name: 'loans', component: () => import('@/views/LoansView.vue'), meta: { title: 'Loans' } }
+   ```
+3. Optionally add it to `navItems` in `src/layouts/DefaultLayout.vue`.
+
+### Adding a store
+
+```js
+// src/stores/loans.js
+import { ref, computed } from 'vue'
+import { defineStore } from 'pinia'
+
+export const useLoansStore = defineStore('loans', () => {
+  const loans = ref([])
+  const total = computed(() => loans.value.length)
+  return { loans, total }
+})
 ```
 
-### Compile and Minify for Production
+## Scripts
 
 ```sh
-npm run build
+npm install        # install dependencies
+npm run dev        # start dev server with hot reload
+npm run lint       # lint and auto-fix
+npm run build      # production build
+npm run preview    # preview the production build
 ```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the branching workflow.
+
+## Recommended IDE setup
+
+[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar).
